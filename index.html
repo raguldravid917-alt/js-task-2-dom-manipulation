@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JS Task 2 - DOM Manipulation</title>
+
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card-bg: #020617;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --card-bg: #020617;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+    }
+
+    body.light {
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #6b7280;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 22px 20px 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .app-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .pill {
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--muted);
+    }
+
+    .controls-section {
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .controls-section:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .controls-section h2 {
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+
+    .controls-section p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: #3b82f6;
+      color: #e5e7eb;
+      transition: background 0.15s ease, transform 0.1s ease,
+        box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      background: #2563eb;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.97);
+      box-shadow: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text);
+      box-shadow: none;
+    }
+
+    .btn-outline:hover {
+      background: rgba(148, 163, 184, 0.08);
+      box-shadow: none;
+    }
+
+    select {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: transparent;
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .preview {
+      margin-top: 12px;
+      padding: 14px 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.55);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    body.light .preview {
+      background: #f8fafc;
+    }
+
+    .preview-title {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .preview-text {
+      font-size: 16px; /* JS will change this value */
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body class="dark">
+  <div class="app">
+    <div class="app-header">
+      <h1 class="app-title">DOM Control Panel</h1>
+      <span class="pill" id="theme-label">Dark mode</span>
+    </div>
+
+    <!-- Theme Switcher -->
+    <section class="controls-section">
+      <h2>Theme Switcher</h2>
+      <p>Toggle between dark and light themes.</p>
+      <div class="btn-row">
+        <button id="theme-toggle-btn">Toggle Theme</button>
+      </div>
+    </section>
+
+    <!-- Font Size Controls -->
+    <section class="controls-section">
+      <h2>Font Size</h2>
+      <p>Increase or decrease the preview text size.</p>
+      <div class="btn-row">
+        <button class="btn-outline" id="font-decrease-btn">A-</button>
+        <button class="btn-outline" id="font-increase-btn">A+</button>
+        <button class="btn-outline" id="font-reset-btn">Reset</button>
+      </div>
+    </section>
+
+    <!-- Background Color Changer -->
+    <section class="controls-section">
+      <h2>Background Color</h2>
+      <p>Change the preview box background color.</p>
+      <div class="btn-row">
+        <select id="bg-select">
+          <option value="#020617">Default Dark</option>
+          <option value="#0f766e">Teal</option>
+          <option value="#4338ca">Indigo</option>
+          <option value="#b91c1c">Red</option>
+          <option value="#ca8a04">Golden</option>
+          <option value="#ffffff">White</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Preview Area -->
+    <section class="preview" id="preview-box">
+      <div class="preview-title">Preview Text</div>
+      <p class="preview-text" id="preview-text">
+        This is a live preview. Try changing theme, font size and background color using the controls above.
+      </p>
+    </section>
+  </div>
+
+  <!-- IMPORTANT: script include bottom-la -->
+  <script src="task2.js"></script>
+</body>
+</html>
